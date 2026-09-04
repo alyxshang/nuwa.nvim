@@ -1,0 +1,23 @@
+on: [push]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Install Neovim and Git."
+        run: sudo apt-get update && sudo apt-get install neovim git tree -y
+
+      - name: "Setup the Neovim test environment."
+        run: |
+          echo $(nvim --headless -c 'lua print(vim.fn.stdpath("data"))' -c 'q')
+          mkdir $HOME/.local/share/nvim/nuwa
+          mkdir $HOME/.local/share/nvim/nuwaPkgs
+          git clone --depth=1 https://github.com/nvim-lua/plenary.nvim $HOME/.local/share/nvim/nuwaPkgs/plenary.nvim
+          git clone --depth=1 https://github.com/alyxshang/nuwa.nvim $HOME/.local/share/nvim/nuwa
+
+      - name: "Run unit tests."
+        run: |
+          cd $HOME/.local/share/nvim/nuwa
+          nvim --headless -u tests/minimal_init.lua -c "lua require('plenary.test_harness').test_directory('tests/', { minimal_init = 'tests/minimal_init.lua' })"
+
