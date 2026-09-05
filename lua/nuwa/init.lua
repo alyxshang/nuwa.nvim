@@ -124,7 +124,6 @@ M.clonePackage = function(gitUrl, pkgPath)
       {
         args = {
 	  "clone",
-          branch,
 	  "--depth=1", 
 	  gitUrl, 
 	  pkgPath
